@@ -1,7 +1,7 @@
 server {
-    listen 80;
+    listen 80 default_server;
     listen [::]:80;
-    server_name _;
+    server_name .xsinator.com .xsinator.xyz;
     return 301 https://$server_name$request_uri;
 }
 
@@ -9,7 +9,7 @@ server {
     listen 443 ssl;
     listen [::]:443 ssl;
 
-    server_name _;
+    server_name xsinator.com crossorigin.xsinator.com xsinator.xyz crossorigin.xsinator.xyz;
 
     ssl_certificate /etc/letsencrypt/live/xsinator.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/xsinator.com/privkey.pem;
