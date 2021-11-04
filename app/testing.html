@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/css/prism.css"  />
+    <link rel="stylesheet" href="/static/css/solid.min.css">
+    <link rel="stylesheet" href="/static/css/brands.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+    <title>XSinator - XS-Leak Browser Test Suite</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a href="/" class="navbar-brand">
+                <img src="/static/img/leak.svg" width="30" height="30" class="d-inline-block align-middle" alt="">
+                XSinator 
+            </a>
+            <small>XS-Leak Browser Test Suite</small>
+            <div class="nav-item ml-auto">
+                <a class="nav-link" href="/faq.html"><span class="fas fa-question-circle"></span> FAQ</a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="https://github.com/RUB-NDS/xsinator.com"><span class="fab fa-github"></span> Source</a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/paper.pdf"><span class="fas fa-file-alt"></span> Paper</a>
+            </div>
+        </nav>
+    </div>
+    <div class="container-fluid" id="testing">
+        <div class="row my-5 justify-content-xl-center">
+            <div class="col-xl-6 bg-light p-3 mx-5 rounded text-justify">
+                <p>Click on <b>Run all Tests</b> to run all test cases in your browser. After that you can compare your results. Click on an individual test case to get more info, execute it on its own, or view the code.</p>
+                <button class="btn btn-primary my-1" id="runAllTestsBtn">
+                    <span class="fas fa-play"></span> Run All Tests
+                </button>
+                <button class="btn btn-primary my-1" id="compareResultsBtn" disabled=true>
+                    <span class="fas fa-exchange-alt"></span> Compare Your Results
+                </button>
+                <a class="btn btn-primary my-1" href="/"><span class="fas fa-external-link-alt"></span> Back to Results</a>
+            </div>
+        </div>
+
+        <div class="row mb-1 mx-2">
+            <div class="col-md-8">
+                <span class="badge badge-danger"></span>
+                <span class="badge badge-success"></span>
+                <span class="badge badge-warning"></span>
+                <span class="badge badge-secondary"></span>
+            </div>
+        </div>
+        <div class="row mx-2">
+            <div class="col-md-12">
+                <small>UA: <code id="appVersionField"></code></small>
+            </div>
+        </div>
+        <div class="row mx-2">
+            <div class="col-md-12">
+                <table class="table table-sm table-hover" height="1000px">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">XS-Leak</th>
+                            <th scope="col">Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="leakTable">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="row mb-4">
+            <div class="col-md-8">
+                <button class="btn btn-primary btn-sm" id="exportResultsBtn">
+                    <span class="fa fa-cloud-download-alt"></span> Export Results
+                </button>
+                <button class="btn btn-primary btn-sm" id="clearResultsBtn">
+                    <span class="fa fa-minus-circle"></span> Clear Results
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="testModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="testModalTitel"></h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p id="testModalDescription"></p>
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Url</th>
+                                <th scope="col">Result</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><a id="testModalUrl0" target="_blank"></a></td>
+                                <td id="testModalRes0"></td>
+                            </tr>
+                            <tr>
+                                <td><a id="testModalUrl1" target="_blank"></a></td>
+                                <td id="testModalRes1"></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    <button id=runTestBtn type="button" class="btn btn-primary mb-4">
+                        <span class="fas fa-redo"></span> Rerun Testcases
+                    </button>
+                    <br>
+                    <br>
+                    <br>
+                    <br>
+                    <h5 class="my-3">Run <code class="text-monospace" id="testModalFunc">leak()</code></h5>
+                    <hr>
+                    <p>Test this XS-Leak against your website or endpoint.</p>
+
+                    <div class="input-group-prepend">
+                        <button id="runCustomTestBtn" class="btn btn-primary" type="button">
+                            <span class="fas fa-play"></span>
+                        </button>
+                        <input type="url" pattern="https?://.+" id="runCustomTestUrl" class="form-control" placeholder="Url to test">
+                    </div>
+                    <div class="row">
+                        <div class="col mb-2">
+                            <small>
+                                <div contenteditable="true" aria-multiline="true" class="bg-light p-2 text-monospace rounded-bottom" id="runCustomTestResult"></div>
+                            </small>
+                        </div>
+                    </div>
+                    <hr>
+                    <small>
+                        <a id="testModalFileLink"></a>
+                        <pre class="line-numbers"><code class="language-js" id="testModalCode"></code></pre>
+                    </small>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div id="exportModal" class="modal fade" tabindex="-1" role="dialog" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Export Results</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Please fill in <code>name</code>, <code>platform</code> and <code>version</code>.</p>
+                    <div contenteditable="true" aria-multiline="true" class="bg-light text-monospace p-1" id="exportModalText">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="module" src="/static/js/testing.min.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+# General
+.DS_Store
+.AppleDouble
+.LSOverride
+
+deploy.sh
+node_modules/
+**/node_modules

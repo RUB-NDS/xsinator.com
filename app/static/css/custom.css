@@ -1,0 +1,92 @@
+html {
+    overflow-x: hidden;
+    overflow-y: scroll;
+}
+
+body {
+    /* fix modal padding */ 
+    padding-right: 0px !important; 
+}
+
+.table-responsive td:not(:first-child) {
+    width: 6em;
+    min-width: 6em;
+    max-width: 6em;
+}
+.navbar > a {
+    text-decoration: none;
+}
+
+.table-hover tbody{
+    cursor: pointer;
+}
+
+.badge-danger:empty:before {
+    content: 'Exploitable'
+}
+.badge-success:empty:before{
+    content: 'Safe'
+}
+.badge-warning:empty:before{
+    content: 'Not Applicable'
+}
+.badge-secondary:empty:before{
+    content: 'Loading'
+}
+
+.badge:empty {
+    display: inline;
+}
+
+
+.highlight > tr:not(.separator) > td:nth-child(2) {
+    border-left: solid 1px red;
+    border-right: solid 1px red;
+}
+
+tr > td:first-child > a {
+    margin-left: 15px;
+}
+
+
+/* fix first column*/ 
+#resultTableHead th:first-child, #resultTableBody td:first-child{
+    position:sticky;
+    left:0px;
+    width: 19rem;
+    min-width: 19rem;
+    max-width: 19rem;
+}
+
+.table-responsive td:first-child{
+    background-color:white;
+}
+.table-responsive th {
+    background-color:white;
+}
+
+.separator{
+    background-color: #cccccc26;
+}
+
+.container {
+    max-width: 1920px;
+    width: 90%;
+}
+
+/* fix result table hight */
+#resultTableHead > tr{
+    height: 60px;
+}
+
+/* fix filter input in table */ 
+#filtername, #filterplatform, #filterversion{
+    margin-left: 15px;
+    width: 10em;
+}
+#testModalUrl0, #testModalUrl1{
+    word-break: break-all;
+}
+
+    
+

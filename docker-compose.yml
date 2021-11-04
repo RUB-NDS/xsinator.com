@@ -1,0 +1,41 @@
+version: '3.7'
+
+services:
+  web:
+    image: ubuntu/nginx
+    restart: unless-stopped
+    ports:
+      - "443:443"
+      - "80:80"
+    volumes:
+      - /etc/letsencrypt/live/xsinator.com/fullchain.pem:/etc/letsencrypt/live/xsinator.com/fullchain.pem
+      - /etc/letsencrypt/live/xsinator.com/privkey.pem:/etc/letsencrypt/live/xsinator.com/privkey.pem
+      - ./app:/var/www/html
+      - ./src/leaks:/var/www/html/src/leaks
+      - ./nginx:/etc/nginx/templates
+    depends_on: 
+       - phpfpm
+       - ws
+    networks:
+       - appnet
+
+
+  phpfpm:
+    image: php:fpm
+    restart: unless-stopped
+    volumes:
+      - ./app:/var/www/html:ro
+    networks:
+      - appnet
+
+  ws:
+    build: ./ws/
+    restart: unless-stopped
+    networks:
+      - appnet
+
+
+networks:
+  appnet:
+    name: appnet
+

@@ -1,0 +1,13 @@
+{
+  "devDependencies": {
+    "@rollup/plugin-node-resolve": "^13.0.2",
+    "rollup": "^2.53.2",
+    "rollup-plugin-terser": "^7.0.2"
+  },
+  "scripts": {
+    "build": "rollup --config"
+  },
+  "dependencies": {
+    "bootstrap.native": "^4.0.3"
+  }
+}

@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="Content-Language" content="en">
+    <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/css/fontawesome.min.css">
+    <link rel="stylesheet" href="/static/css/solid.min.css">
+    <link rel="stylesheet" href="/static/css/brands.min.css">
+    <link rel="stylesheet" href="/static/css/custom.css">
+
+    <title>XSinator - XS-Leak Browser Test Suite</title>
+</head>
+
+<body>
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light">
+            <a href="/" class="navbar-brand">
+                <img src="/static/img/leak.svg" width="30" height="30" class="d-inline-block align-middle" alt="">
+                XSinator 
+            </a>
+            <small>XS-Leak Browser Test Suite</small>
+            <div class="nav-item ml-auto">
+                <a class="nav-link" href="/faq.html"><span class="fas fa-question-circle"></span> FAQ</a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="https://github.com/RUB-NDS/xsinator.com"><span class="fab fa-github"></span> Source</a>
+            </div>
+            <div class="nav-item">
+                <a class="nav-link" href="/paper.pdf"><span class="fas fa-file-alt"></span> Paper</a>
+            </div>
+        </nav>
+    </div>
+    <div class="container-fluid">
+        <div class="row my-5 justify-content-xl-center">
+            <div class="col-xl-6 bg-light p-3 mx-5 rounded text-justify">
+                <h3>FAQ</h3>
+                <hr>
+                <p><b>TLDR:</b> Cross-Site Leaks (XS-Leaks) describe a client-side bug that allows
+                    an attacker to collect side-channel information from a cross-origin
+                    HTTP resource.
+                </p>
+                <hr>
+                <h4>Our Paper</h4>
+                <p>
+                <a href="/paper.pdf"><span class="fas fa-file-alt"></span></a> <strong>XSinator.com: From a Formal Model to the Automatic Evaluation of Cross-Site Leaks in Web Browsers</strong> 
+                </p>
+                <p>
+                In our paper, we contribute to the ongoing XS-Leak research by presenting the first formal
+                model for XS-Leaks. Our comprehensive analysis of known XS-Leaks reveals that all of them 
+                fit into this new model. With the help of this formal approach, we (1) systematically searched for new
+                XS-Leak attack classes, (2) implemented XSinator.com, a tool to automatically evaluate if a given web browser is vulnerable to XS-Leaks, 
+                and (3) systematically evaluated mitigations for XS-Leaks. We found 14 new attack classes, evaluated the resilience of 56
+                different browser/OS combinations against a total of 34 XS-Leaks, and propose a methodology to mitigate XS-Leaks. 
+                </p>
+                <hr>
+                <h4>XS-Leaks</h4>
+                <h6>User States in Webapplications</h6>
+                <p>
+                    When interacting with a website, a user has a well-defined <i>state</i>
+                    – this state typically contains the information whether the user is
+                    logged in or not. Besides the login status, the user state may contain
+                    account permissions, such as admin privileges, premium membership, 
+                    or restricted accounts. The number of different user states
+                    is potentially unlimited. For example, in a webmail application, a
+                    user may or may not have received an email with the subject <code>top
+                    secret</code>.
+                </p>
+                <h6>Cross-Site Leaks on the User States</h6>
+                <p>
+                    Cross-Site Leaks on the User States. To distinguish between
+                    two user states, the attacker’s JavaScript code must be able to identify 
+                    differences in its own execution environment resulting from
+                    different responses to cross-origin HTTP requests. These different
+                    responses must correspond to different user states at the target web
+                    application. If this differentiation is possible, we call this vulnerability 
+                    an XS-Leak. The attacker can then craft a malicious website,
+                    which triggers the XS-Leak once the victim opens it (see image below). In
+                    the following two real-world examples, we try to exemplify the
+                    scope of the problem
+                </p>
+
+                <h6>XS-Leak Flow Example</h6>
+
+                <div class="text-center ">
+                    <img src="/static/img/xsleak_flow.svg" width="617" height="378" class="img-fluid" alt="...">
+                </div>
+                <p>
+                    The victim (1) visits the attacker-controlled website, which (2) uses an inclusion 
+                    method to request a state-dependent resource from a target
+                    website. The attacker then uses (3) a leak technique to (4)
+                    determine the victim’s user state.
+                </p>
+
+
+                <hr>
+                <h4>Other Resources</h4>
+
+                <p>
+                    <a href="https://xsleaks.dev/">XS-Leaks Wiki</a></li>
+                </p>
+
+                <hr>
+                <h4>Contact</h4>
+                <p>
+                    <a href="https://twitter.com/kunte_ctf"><i class="fab fa-twitter"></i> @kunte_ctf</a>
+                </p>
+
+            </div>
+            
+        </div>
+    </div>
+</body>
+
+</html>
