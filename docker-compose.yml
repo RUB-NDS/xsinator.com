@@ -12,7 +12,7 @@ services:
       - /etc/letsencrypt/live/xsinator.com/privkey.pem:/etc/letsencrypt/live/xsinator.com/privkey.pem
       - ./app:/var/www/html
       - ./src/leaks:/var/www/html/src/leaks
-      - ./nginx:/etc/nginx/templates
+      - ./nginx/xsinator.com.conf:/etc/nginx/sites-available/xsinator.com.conf
     depends_on: 
        - phpfpm
        - ws
