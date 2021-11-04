@@ -2,7 +2,7 @@ version: '3.7'
 
 services:
   web:
-    image: ubuntu/nginx
+    build: ./nginx/
     restart: unless-stopped
     ports:
       - "443:443"
@@ -12,7 +12,7 @@ services:
       - /etc/letsencrypt/live/xsinator.com/privkey.pem:/etc/letsencrypt/live/xsinator.com/privkey.pem
       - ./app:/var/www/html
       - ./src/leaks:/var/www/html/src/leaks
-      - ./nginx/xsinator.com.conf:/etc/nginx/sites-available/xsinator.com.conf
+      - ./nginx/default.conf:/etc/nginx/sites-available/default.conf
     depends_on: 
        - phpfpm
        - ws
