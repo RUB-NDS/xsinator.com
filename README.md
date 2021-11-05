@@ -9,7 +9,7 @@ XS-Leak Browser Test Suite
 1. cd into folder 
 1. change cross-origin domain in `config.js`
     - for local testing: `let baseUrl = 'http://localhost:8000/'`
-1. Rollup javascript: `npm build`
+1. Rollup javascript: `npm install && npm run build`
 1. get cert with certbot `certbot certonly --standalone --cert-name "xsinator.com"  -d "xsinator.com" -d "xsinator.xyz" -d "crossorigin.xsinator.xyz" --register-unsafely-without-email`
 1. docker-compose up
     
