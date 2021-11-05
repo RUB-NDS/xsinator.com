@@ -3,12 +3,22 @@ const leak = async (url) => {
         window.WW.location = url
         // could be done differently
         await sleep(2000)
-        if(window.WW.window){
-            // no coop
-            return r(0)
+        try {
+            // chrome returns undefined, Firefox not
+            if(window.WW.document || window.WW.document === undefined){
+                // window is ded now :/ 
+                return r(0)
+            }
+            else{
+                console.debug(window.WW.document)
+                return r(1)
+            }
         }
-        // this window is now DEAD
-        return r(1)
+        catch(e){
+            return r(1)
+        }
+        
+       
     })
 }
 
