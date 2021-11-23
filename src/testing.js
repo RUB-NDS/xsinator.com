@@ -15,7 +15,8 @@ import './prism.js';
 
 // event handlers and buttons
 window.onload = () => {
-    console.log("%cXSinator", "color: black; font-size: x-large")
+    console.log("%cXSinator", "color: black; font-size: x-large");
+    // console.log('%c  XSinator','background-image:url("https://xsinator.com/static/img/leak.svg");font-size:40px; background-size: contain; background-repeat: no-repeat;');
     // load previous results from LocalStorage 
     loadResultsFromLocalStorage()
     // load testcases

