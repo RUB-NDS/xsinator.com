@@ -254,5 +254,11 @@ const showTestModal = (test, metadata) => {
     testModalResult.appendChild(span)
 
 
-    new BSN.Modal('#testModal', { backdrop: true}).show()
+    testModal.addEventListener('hide.bs.modal', (e) => {
+        // console.log(e)
+    });
+
+    new BSN.Modal(testModal, { backdrop: true}).show()
+
+
 }
