@@ -1,8 +1,6 @@
 let URL_LIMIT = 10000
 
 const checkLoad = async (url) => {
-    
-    console.log(url, url.length)
     return new Promise((r, e)=>{
         let s = document.createElement('script');
         s.src = url;
