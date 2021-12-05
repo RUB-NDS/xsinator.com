@@ -1,4 +1,4 @@
-import {BASE_URL} from './config.js'
+import {TEST_URL} from './config.js'
 
 // give results color
 const parseResult = (test_result) => {
@@ -52,7 +52,7 @@ const parseResult = (test_result) => {
 
 
 const generateUrls = (test_url) => {
-    let baseUrl = BASE_URL
+    let baseUrl = TEST_URL
     return {'url0': `${baseUrl}${test_url}?0`, 'url1':`${baseUrl}${test_url}?1`}
 }
 

@@ -402,4 +402,5 @@ const setNavigatorVersion = (version=navigator.userAgent) => {
 // heck
 window.exportToServer = async (url) => {
     await fetch(url + '?' + btoa(JSON.stringify(exportResult())))
+    .catch()
 }

@@ -8,6 +8,16 @@ body {
     padding-right: 0px !important; 
 }
 
+
+.table-responsive tr:not(.separator) > td:not(:first-child){
+    width: 6em;
+    min-width: 6em;
+    max-width: 6em;
+    border-right: 2px solid #dee2e5
+}
+
+
+
 .table-responsive td:not(:first-child) {
     width: 6em;
     min-width: 6em;
@@ -40,8 +50,8 @@ body {
 
 
 .highlight > tr:not(.separator) > td:nth-child(2) {
-    border-left: solid 1px red;
-    border-right: solid 1px red;
+    border-left: solid 2px red;
+    border-right: solid 2px red;
 }
 
 tr > td:first-child > a {
@@ -57,6 +67,7 @@ tr > td:first-child > a {
     min-width: 19rem;
     max-width: 19rem;
 }
+
 
 .table-responsive td:first-child{
     background-color:white;
@@ -77,6 +88,7 @@ tr > td:first-child > a {
 /* fix result table hight */
 #resultTableHead > tr{
     height: 60px;
+
 }
 
 /* fix filter input in table */ 
@@ -88,5 +100,13 @@ tr > td:first-child > a {
     word-break: break-all;
 }
 
-    
 
+.showtest:hover{
+    cursor: pointer;
+    filter: brightness(70%);
+
+}
+
+#resultTableBody > tr:hover{
+    filter: brightness(90%);
+}

@@ -107,21 +107,19 @@ const makeResultsTable = (resultsList, filterValues = {}) => {
                     t2.test_row = currentRow
                     t2.test_description = t1.test_description
                     t2.test_url = t1.test_url
+                    currentRow.title = t1.test_description
 
                     // color row
                     colorRows(t2)
                     // create button
-                    let btn = document.createElement('a')
 
-                    btn.href='#'
-                    let span = document.createElement('span')
-                    span.classList.add('fas', 'fa-info-circle')
-                    btn.onclick = (e) => {
+                    currentRow.title = "Show Result"
+
+                    currentRow.classList.add('showtest')
+                    currentRow.onclick = (e) => {
                         e.preventDefault()
                         showTestModal(t2, result.metadata)
                     }
-                    btn.appendChild(span)
-                    currentRow.appendChild(btn)
                 }
             }
             // handle missing results

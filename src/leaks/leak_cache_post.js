@@ -1,5 +1,5 @@
-import { BASE_URL } from "./../config.js";
-let RESOURCE = `${BASE_URL}testcases/files/image1.gif`
+import { TEST_URL } from "./../config.js";
+let RESOURCE = `${TEST_URL}testcases/files/image1.gif`
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));

