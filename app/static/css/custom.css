@@ -58,6 +58,10 @@ tr > td:first-child > a {
     margin-left: 15px;
 }
 
+#results-table {
+    box-sizing: border-box;
+}
+
 
 /* fix first column*/ 
 #resultTableHead th:first-child, #resultTableBody td:first-child{
@@ -69,9 +73,7 @@ tr > td:first-child > a {
 }
 
 
-.table-responsive td:first-child{
-    background-color:white;
-}
+
 .table-responsive th {
     background-color:white;
 }
@@ -101,12 +103,33 @@ tr > td:first-child > a {
 }
 
 
+#resultTableBody > tr:hover:not(.separator) > td.showtest.table-success{
+    background-color: #b1dfbb;
+}
+
+#resultTableBody > tr:hover:not(.separator) > td.showtest.table-danger{
+    background-color: #f1b0b7;
+}
+
+#resultTableBody > tr:hover:not(.separator) > td.showtest.table-warning{
+    background-color: #ffe8a1;
+}
+
+#resultTableBody > tr:hover:not(.separator) > td.showtest.table-default{
+    background-color: #ececf6;
+}
+
+#resultTableBody > tr:hover:not(.separator) > td.showtest.table-secondary{
+    background-color: #c8cbcf;
+}
+
+
+
+
+
 .showtest:hover{
     cursor: pointer;
-    filter: brightness(70%);
-
+    box-shadow: inset 0px 0px 8px 1px rgb(0 0 0 / 50%);
 }
 
-#resultTableBody > tr:hover{
-    filter: brightness(90%);
-}
+
