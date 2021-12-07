@@ -73,6 +73,9 @@ tr > td:first-child > a {
 }
 
 
+.table-responsive tr:not(.separator) > td:first-child{
+    background-color:white;
+}
 
 .table-responsive th {
     background-color:white;
