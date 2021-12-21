@@ -23,7 +23,7 @@ window.onload = () => {
     makeTable(testcases)
     //add event listener to remove hash
     testModal.addEventListener('hide.bs.modal', (e) => {
-        history.pushState(1, 1, '#')
+        location.hash = ''
     })
     // open modal
     handleHash()
@@ -73,7 +73,7 @@ runAllTestsBtn.onclick = async (e) => {
 
 compareResultsBtn.onclick = () => {
     // go back index
-    document.location = '/'
+    location = '/'
 }
 
 clearResultsBtn.onclick = () => {
@@ -247,7 +247,7 @@ const showTestModal = async (test) => {
     m.show()
 
     // set location hash
-    history.pushState('', '', `#${test_name}`)
+    location.hash = `${test_name}`
     
     // rerun test
     runTestBtn.onclick = async () => {
