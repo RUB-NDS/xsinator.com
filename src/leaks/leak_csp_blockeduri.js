@@ -8,8 +8,8 @@ const leak = async (url) => {
             if(e.data === 'https://example.com'){
                 // detected redirect to example.com
                 return r(1)
-            }else if(e.data === url){
-                // firefox
+            }else if(url.includes(e.data)){
+                // catch correct implementation
                 return r(0)
             }
             else{
