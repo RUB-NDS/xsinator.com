@@ -261,8 +261,9 @@ const showTestModal = async (test) => {
         colorRows(test)
         // save again 
         localStorage.setItem('results', JSON.stringify(exportResult('Your Browser',"",""))) // empty version, platform
-        // reopen the modal
-        showTestModal(test)
+        // update the results
+        testModalRes0.innerText = test.test_result.res0
+        testModalRes1.innerText = test.test_result.res1
         // close window
         if (window.WW){
             window.WW.close()
@@ -332,7 +333,7 @@ const isValidUrl = (url) => {
     return false
 }
 
-const exportResult = (name='BrowserName', platform="Desktop/iOS/Android", version="XX.X.X") => {
+const exportResult = (name='BrowserName', platform="Desktop/iOS/Android", version="XXX.X") => {
     return {
         'metadata': {
             'name': name,

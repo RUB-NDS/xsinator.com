@@ -39,6 +39,9 @@ const parseResult = (test_result) => {
     else if (res0 === 'Failed to open media' && res1 === 'Failed to open media'){
         return 'success'
     }
+    else if (res0 === 'Unsupported source type' && res1 === 'Unsupported source type'){
+        return 'success'
+    }
     
 
     // errors
