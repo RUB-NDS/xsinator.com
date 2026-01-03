@@ -1,5 +1,5 @@
 const applePayMethod = {
-    supportedMethods: "https://apple.com/apple-pay",
+    supportedMethods: "https://google.com/pay",
     data: {
         version: 3,
         merchantIdentifier: "merchant.com.example",

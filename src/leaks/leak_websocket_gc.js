@@ -84,7 +84,7 @@ const iframeWs = (ws) => {
 
 const leak = async(url, waitTime=2000, limit=255) => {
     let t = performance.now()
-    let ws = 'wss://xsinator.com/ws'
+    let ws = 'wss://xsinator.com:8080'
     console.log(`[+] Exausting WS limit until we can not open any new WS.`)
     // create one websocket in an out-of-process iframe, because of the 255 limit per site vs the 256 global ws connection limit
     let i = iframeWs()

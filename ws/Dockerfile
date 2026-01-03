@@ -1,12 +1,14 @@
-FROM node:16-alpine
+FROM golang:1.20-alpine
 
-
-# install dependencies
 WORKDIR /app
-ADD ./package.json ./package.json
-ADD ./server.js ./server.js
-RUN npm install
 
+COPY go.mod ./
+RUN go mod download
 
-CMD npm run start
+COPY . .
 
+RUN go build -o xsinator-ws-server .
+
+EXPOSE 8080
+
+CMD ["./xsinator-ws-server"]

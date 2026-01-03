@@ -1,6 +1,6 @@
 <script>
     const openWS = () => {
-        let s = new WebSocket('wss://xsinator.com/ws')
+        let s = new WebSocket('wss://xsinator.com:8080')
         s.onopen = (e) => {
             console.log(e)
             s.send('Hi')
