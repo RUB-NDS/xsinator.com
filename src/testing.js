@@ -72,8 +72,8 @@ runAllTestsBtn.onclick = async (e) => {
 
 
 compareResultsBtn.onclick = () => {
-    // go back index
-    location = '/'
+    // go to the results comparison page
+    location = '/results.html'
 }
 
 clearResultsBtn.onclick = () => {
@@ -398,6 +398,7 @@ const toggleButtons = () => {
 
 const setNavigatorVersion = (version=navigator.userAgent) => {
     appVersionField.innerText = version
+    appVersionField.title = version
 }
 
 // heck

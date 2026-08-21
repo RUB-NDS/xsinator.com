@@ -3,10 +3,10 @@ import {nodeResolve} from '@rollup/plugin-node-resolve';
 
 export default [
     {
-        input: './src/index.js',
+        input: './src/results.js',
         output: [
             {
-                file: "./app/static/js/index.min.js",
+                file: "./app/static/js/results.min.js",
                 format: "es",
                 plugins: [terser()]
             },

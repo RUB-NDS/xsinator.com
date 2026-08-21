@@ -92,7 +92,7 @@ const makeResultsTable = (resultsList, filterValues = {}) => {
         // create link to test
         let testLink = document.createElement('a')
         testLink.innerText = t1.test_name
-        testLink.href = `/testing.html#${t1.test_name}`
+        testLink.href = `/#${t1.test_name}`
         firstCell.appendChild(testLink)
 
         // fill rest
@@ -245,7 +245,7 @@ const showTestModal = (test, metadata) => {
     testModalUrl1.innerText = url1
     testModalBrowser.innerText = `${metadata.name} ${metadata.platform} Version ${metadata.version}`
     testModalAppVersionField.innerText = metadata.appVersion
-    testModalLink.href = `testing.html#${test_name}`
+    testModalLink.href = `/#${test_name}`
 
     // show result 
     testModalResult.innerText = ''
