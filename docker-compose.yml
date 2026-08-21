@@ -2,23 +2,32 @@ services:
   web:
     build: ./nginx/
     restart: unless-stopped
-    ports:
-      - "443:443"
-      - "80:80"
     volumes:
-      - /etc/letsencrypt/live/xsinator.com/fullchain.pem:/etc/letsencrypt/live/xsinator.com/fullchain.pem
-      - /etc/letsencrypt/live/xsinator.com/privkey.pem:/etc/letsencrypt/live/xsinator.com/privkey.pem
       - ./app:/var/www/html
       - ./src/leaks:/var/www/src/leaks
-      - ~/logs/:/var/log/nginx/:rw
       - ./nginx/nginx.conf:/etc/nginx/nginx.conf
       - ./nginx/xsinator.com.conf:/etc/nginx/sites-enabled/xsinator.com.conf
     depends_on: 
        - phpfpm
-       - ws
     networks:
-       - appnet
-
+       - net-xsinator
+       - internal
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net-xsinator"
+      # Main domain - HTTP redirect
+      - "traefik.http.routers.xsinator-http.rule=Host(`${MAIN_DOMAIN}`) || Host(`${CROSSORIGIN_DOMAIN}`)"
+      - "traefik.http.routers.xsinator-http.entrypoints=web"
+      - "traefik.http.routers.xsinator-http.middlewares=redirect-to-https@docker"
+      # Main domain - HTTPS
+      - "traefik.http.routers.xsinator.rule=Host(`${MAIN_DOMAIN}`) || Host(`${CROSSORIGIN_DOMAIN}`)"
+      - "traefik.http.routers.xsinator.entrypoints=websecure"
+      - "traefik.http.routers.xsinator.tls=true"
+      - "traefik.http.routers.xsinator.tls.certresolver=cloudflare"
+      - "traefik.http.routers.xsinator.tls.domains[0].main=${MAIN_DOMAIN}"
+      - "traefik.http.routers.xsinator.tls.domains[1].main=${CROSSORIGIN_DOMAIN}"
+      - "traefik.http.routers.xsinator.tls.domains[2].main=${WS_DOMAIN}"
+      - "traefik.http.services.xsinator.loadbalancer.server.port=80"
 
   phpfpm:
     image: php:fpm
@@ -26,21 +35,33 @@ services:
     volumes:
       - ./app:/var/www/html:ro
     networks:
-      - appnet
+      - internal
 
   ws:
     build: ./ws/
     restart: unless-stopped
-    volumes:
-      - /etc/letsencrypt/live/xsinator.com/fullchain.pem:/etc/letsencrypt/live/xsinator.com/fullchain.pem
-      - /etc/letsencrypt/live/xsinator.com/privkey.pem:/etc/letsencrypt/live/xsinator.com/privkey.pem
-    ports:
-      - "8080:8080"
     networks:
-      - appnet
-
+      - net-xsinator
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=net-xsinator"
+      # WebSocket - HTTP redirect
+      - "traefik.http.routers.xsinator-ws-http.rule=Host(`${WS_DOMAIN}`)"
+      - "traefik.http.routers.xsinator-ws-http.entrypoints=web"
+      - "traefik.http.routers.xsinator-ws-http.middlewares=redirect-to-https@docker"
+      # WebSocket - HTTPS
+      - "traefik.http.routers.xsinator-ws.rule=Host(`${WS_DOMAIN}`)"
+      - "traefik.http.routers.xsinator-ws.entrypoints=websecure"
+      - "traefik.http.routers.xsinator-ws.tls=true"
+      - "traefik.http.services.xsinator-ws.loadbalancer.server.port=8080"
+      # WebSocket transport configuration
+      - "traefik.http.services.xsinator-ws.loadbalancer.server.scheme=http"
+      - "traefik.http.services.xsinator-ws.loadbalancer.passhostheader=true"
+      # Increase response forwarding timeout for long-lived WebSocket connections
+      - "traefik.http.services.xsinator-ws.loadbalancer.responseforwarding.flushinterval=100ms"
 
 networks:
-  appnet:
-    name: appnet
-
+  net-xsinator:
+    external: true
+  internal:
+    name: xsinator-internal
