@@ -136,3 +136,18 @@ tr > td:first-child > a {
 }
 
 
+
+/* mark the current page in the navbar */
+.navbar .nav-link.active {
+    font-weight: 600;
+}
+
+/* keep the long UA string on one line in the button row */
+#appVersionField {
+    display: inline-block;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    vertical-align: bottom;
+}
