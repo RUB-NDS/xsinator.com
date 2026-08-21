@@ -140,6 +140,7 @@ tr > td:first-child > a {
 /* mark the current page in the navbar */
 .navbar .nav-link.active {
     font-weight: 600;
+    box-shadow: inset 0 -2px 0 #007bff;
 }
 
 /* keep the long UA string on one line in the button row */
