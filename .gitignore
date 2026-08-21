@@ -7,5 +7,7 @@ deploy.sh
 restart.sh
 node_modules/
 **/node_modules
-app/static/js/index.min.js
-app/static/js/testing.min.js
+.env
+
+# built js bundles
+app/static/js/*.min.js
