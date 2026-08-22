@@ -11,3 +11,6 @@ node_modules/
 
 # built js bundles
 app/static/js/*.min.js
+
+# compiled benchmark client
+ws/benchmark_bin

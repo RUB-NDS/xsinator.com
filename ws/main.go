@@ -1,5 +1,5 @@
-//go:build !testclient
-// +build !testclient
+//go:build !benchmark
+// +build !benchmark
 
 package main
 
@@ -29,23 +29,31 @@ func wsHandler(w http.ResponseWriter, r *http.Request) {
 
 	// Increment the counter for a new connection.
 	atomic.AddInt64(&connectedCount, 1)
-	// log.Printf("New connection, active connections: %d", atomic.LoadInt64(&connectedCount))
 
-	// Keep the connection open for 60 seconds, then close it.
 	go func(c *websocket.Conn) {
 		defer func() {
+			c.Close()
 			// Decrement the counter when the connection is closed.
 			atomic.AddInt64(&connectedCount, -1)
-			// log.Printf("Connection closed, active connections: %d", atomic.LoadInt64(&connectedCount))
 		}()
-		time.Sleep(60 * time.Second)
-		c.Close()
+
+		// Outlive a full pool exhaustion run, but do not hold abandoned ones.
+		c.SetReadDeadline(time.Now().Add(2 * time.Minute))
+
+		// Read until the client goes away: gorilla answers the close frame from
+		// inside ReadMessage, so the browser frees the socket slot right away
+		// instead of waiting for the deadline.
+		for {
+			if _, _, err := c.ReadMessage(); err != nil {
+				return
+			}
+		}
 	}(conn)
 }
 
 func main() {
 	http.HandleFunc("/", wsHandler)
-	log.Println("WebSocket TLS server listening on :8080")
+	log.Println("WebSocket server listening on :8080")
 
 	// Launch a goroutine that outputs the connection status every 10 seconds.
 	go func() {
@@ -56,12 +64,9 @@ func main() {
 		}
 	}()
 
-	const certFile = "/etc/letsencrypt/live/xsinator.com/fullchain.pem"
-	const keyFile = "/etc/letsencrypt/live/xsinator.com/privkey.pem"
-
-	// Start the HTTPS server using TLS.
-	err := http.ListenAndServeTLS(":8080", certFile, keyFile, nil)
+	// Start HTTP server (Traefik handles TLS termination)
+	err := http.ListenAndServe(":8080", nil)
 	if err != nil {
-		log.Fatal("ListenAndServeTLS error:", err)
+		log.Fatal("ListenAndServe error:", err)
 	}
 }

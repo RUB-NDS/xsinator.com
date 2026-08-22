@@ -194,7 +194,7 @@ let testcases = [
         'test_description': 'Detect the number of websockets on a page by exausting the socket limit.',
         'test_file': '/src/leaks/leak_websocket_gc.js',
         'test_function': leak_websocket_gc,
-        'test_timeout': 40000,
+        'test_timeout': 60000,
         'test_needsWindow': true,
     },
     {

