@@ -34,6 +34,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./app:/var/www/html:ro
+      - ./php-hardening.ini:/usr/local/etc/php/conf.d/zz-hardening.ini:ro
     networks:
       - internal
 
