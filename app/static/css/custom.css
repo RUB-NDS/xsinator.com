@@ -144,11 +144,10 @@ tr > td:first-child > a {
 }
 
 /* keep the long UA string on one line in the button row */
-#appVersionField {
-    display: inline-block;
+.ua-line {
+    display: block;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-    vertical-align: bottom;
 }
